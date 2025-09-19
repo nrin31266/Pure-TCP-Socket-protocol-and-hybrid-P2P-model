@@ -92,6 +92,7 @@ public class Server {
                     }
                 }
             }
+
             // nếu readLine trả về null -> client đã disconnect
             if (userDto != null) {
                 userManagement.removeUser(userDto);
@@ -99,10 +100,13 @@ public class Server {
                 for (PrintWriter writer : userManagement.getUserWriters().values()) {
                     writer.println("USER_DISCONNECTED|" + userJson);
                 }
+                System.out.println("Client disconnected: " + userManagement.generateKey(userDto));
+            }else{
+                System.out.println("Client disconnected before sending user info: " + clientSocket.getInetAddress());
             }
 //            in.close();
 //            out.close();
-            System.out.println("Client disconnected: " + clientSocket.getInetAddress());
+
         } catch (IOException e) {
             System.out.println("Connection error with " + clientSocket.getInetAddress());
         }

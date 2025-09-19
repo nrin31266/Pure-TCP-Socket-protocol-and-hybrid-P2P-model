@@ -76,7 +76,7 @@ public class UserManagement {
     }
 
 
-    private String generateKey(UserDto user) {
+    public String generateKey(UserDto user) {
         return user.getUsername() + "@" + user.getIPAddress() + ":" + user.getPort();
     }
     public UserDto parseKey(String key) {

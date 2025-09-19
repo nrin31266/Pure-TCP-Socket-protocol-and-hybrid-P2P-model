@@ -5,9 +5,12 @@
 package com.nrin31266.tcpsocketclient;
 
 
+import com.nrin31266.tcpsocketclient.config.PeerServer;
+import com.nrin31266.tcpsocketclient.swing.HomePanel;
+import com.nrin31266.tcpsocketclient.swing.LoginPanel;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Toolkit;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -19,6 +22,7 @@ public class ClientApplication extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(ClientApplication.class.getName());
     private JPanel currentPanel;
+
 
     /**
      * Creates new form ClientApplication
@@ -52,20 +56,21 @@ public class ClientApplication extends javax.swing.JFrame {
         this.revalidate();
         this.repaint();
         this.pack();
-        this.setLocationRelativeTo(null);
+
     }
 
     // Hiển thị màn hình login
-    private void showLoginPanel() {
+    public void showLoginPanel() {
         LoginPanel loginPanel = new LoginPanel(this);
         JPanel wrapper = new JPanel(new java.awt.GridBagLayout());
         wrapper.add(loginPanel, new java.awt.GridBagConstraints());
         wrapper.setPreferredSize(new Dimension(600, 600));
         setPanel(wrapper);
+        this.setLocationRelativeTo(null);
     }
 
     public void showHomePanel(String username) {
-        HomePanel homePanel = new HomePanel(username);
+        HomePanel homePanel = new HomePanel(username, this);
         setPanel(homePanel);
     }
 

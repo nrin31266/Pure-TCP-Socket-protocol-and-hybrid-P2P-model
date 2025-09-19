@@ -1,4 +1,7 @@
-package com.nrin31266.tcpsocketclient;
+package com.nrin31266.tcpsocketclient.swing;
+
+import com.nrin31266.tcpsocketclient.ClientApplication;
+import com.nrin31266.tcpsocketclient.config.ConnectServer;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -17,6 +20,7 @@ public class LoginPanel extends JPanel {
     public LoginPanel(ClientApplication app) {
         this.app = app;
         initComponents();
+
     }
 
     private void initComponents() {
@@ -47,8 +51,8 @@ public class LoginPanel extends JPanel {
         add(lbError);
         
         add(btnLogin);
-        
-        
+
+
     }
 
     @Override

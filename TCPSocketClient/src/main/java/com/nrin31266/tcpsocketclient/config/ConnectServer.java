@@ -1,4 +1,4 @@
-package com.nrin31266.tcpsocketclient;
+package com.nrin31266.tcpsocketclient.config;
 
 import com.google.gson.Gson;
 import com.nrin31266.tcpsocketclient.dto.UserDto;
@@ -14,7 +14,8 @@ public class ConnectServer {
     private final String serverHost = "127.0.0.1";
     private String username;   // thêm username
     private static ConnectServer instance;
-    private boolean connected = false;
+    // volatile đảm bảo mọi thread đọc giá trị mới nhất của biến (không bị cache)
+    private volatile boolean connected = false;
     private Gson gson = new Gson();
     private final PeerServer peerServer = PeerServer.getInstance();
 
@@ -94,7 +95,11 @@ public class ConnectServer {
                 }
                 System.err.println("Dung lang nghe server");
             } catch (IOException e) {
-                e.printStackTrace();
+                if (connected) { // chỉ in lỗi khi chưa logout
+                    e.printStackTrace();
+                } else {
+                    System.out.println("Listener stopped (disconnected).");
+                }
             }
         }).start();
     }
@@ -105,24 +110,13 @@ public class ConnectServer {
         out.println(type + "|" + json);
     }
 
-    // Nhận message (blocking)
-    public String readMessage() {
-        if (connected && in != null) {
-            try {
-                return in.readLine();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return null;
-    }
 
     // Ngắt kết nối
     public void disconnect() {
         try {
-            if (connected && out != null) {
-                out.println("[SYSTEM] " + username + " has left the chat.");
-            }
+//            if (connected && out != null) {
+//                out.println("[SYSTEM] " + username + " has left the chat.");
+//            }
             connected = false;
             if (socket != null && !socket.isClosed()) {
                 socket.close();
