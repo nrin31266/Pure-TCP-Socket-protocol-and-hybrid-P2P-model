@@ -40,4 +40,5 @@ public class UserDto {
     public void setIPAddress(String iPAddress) {
         this.iPAddress = iPAddress;
     }
+
 }

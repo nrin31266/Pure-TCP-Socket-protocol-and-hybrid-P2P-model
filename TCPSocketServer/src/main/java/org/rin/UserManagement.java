@@ -58,6 +58,9 @@ public class UserManagement {
     public Map<String, UserDto> getAllUsers() {
         return userMap;
     }
+
+
+
     public Map<String, UserDto> getAllUsersNotIncluding(UserDto userDto) {
         Map<String, UserDto> result = new HashMap<>(userMap);
         result.remove(generateKey(userDto));

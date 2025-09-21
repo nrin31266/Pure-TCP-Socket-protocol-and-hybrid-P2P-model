@@ -6,6 +6,7 @@ package com.nrin31266.tcpsocketclient.swing;
 
 import com.nrin31266.tcpsocketclient.ClientApplication;
 import com.nrin31266.tcpsocketclient.config.ConnectServer;
+import com.nrin31266.tcpsocketclient.service.ConnectionManagement;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,7 +15,7 @@ public class HomePanel extends javax.swing.JPanel {
     private String username;
     private ConnectServer client;
     private ClientApplication app;
-    
+    private final ConnectionManagement connectionManagement = ConnectionManagement.getInstance();
     
     public HomePanel(String username, ClientApplication app) {
         this.username = username;
@@ -61,8 +62,10 @@ public class HomePanel extends javax.swing.JPanel {
     private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
         System.out.println("Logout clicked");
+        this.username = null;
         client.disconnect();
-        app.showLoginPanel();
+        app.showLoginPanel(false);
+        connectionManagement.closeAllConnections();
 
     }
 

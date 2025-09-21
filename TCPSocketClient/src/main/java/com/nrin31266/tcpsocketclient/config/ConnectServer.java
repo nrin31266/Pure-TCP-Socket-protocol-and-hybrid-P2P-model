@@ -3,7 +3,9 @@ package com.nrin31266.tcpsocketclient.config;
 import com.google.gson.Gson;
 import com.nrin31266.tcpsocketclient.dto.UserDto;
 import java.io.*;
+import java.lang.reflect.Type;
 import java.net.Socket;
+import java.util.List;
 
 public class ConnectServer {
 
@@ -20,22 +22,18 @@ public class ConnectServer {
     private final PeerServer peerServer = PeerServer.getInstance();
 
     // private constructor (Singleton)
-    private ConnectServer(String username) {
-        this.username = username;
+    private ConnectServer() {
     }
 
     // Lấy instance duy nhất
-    public static synchronized ConnectServer getInstance(String username) {
+    public static synchronized ConnectServer getInstance() {
         if (instance == null) {
-            instance = new ConnectServer(username);
+            instance = new ConnectServer();
         }
         return instance;
     }
 
-    // Lấy instance duy nhất
-    public static ConnectServer getInstance() {
-        return instance;
-    }
+
 
     // Hàm connect tới server
     public void connect() throws IOException {
@@ -58,6 +56,10 @@ public class ConnectServer {
         }
     }
 
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public void startListening() {
         new Thread(() -> {
             try {
@@ -75,6 +77,20 @@ public class ConnectServer {
 //                            List<UserDto> users = gson.fromJson(json, listType);
                             System.out.println("Current users: " + json);
                             // TODO: cập nhật UI, bảng user,...
+
+                            Type listType = new com.google.gson.reflect.TypeToken<List<UserDto>>() {
+                            }.getType();
+                            List<UserDto> users = gson.fromJson(json, listType);
+                            for (UserDto user : users) {
+                                PeerClient peerClient = new PeerClient(user.getIPAddress(), user.getPort(), user.getUsername(), this.username);
+                                new Thread(() -> {
+                                    try {
+                                        peerClient.connect();
+                                    } catch (Exception e) {
+                                        System.err.println("Failed to connect to peer " + user);
+                                    }
+                                }).start();
+                            }
                             break;
 
                         case "USER_CONNECTED":
@@ -82,6 +98,15 @@ public class ConnectServer {
 //                            UserDto newUser = gson.fromJson(json, UserDto.class);
 //                            System.out.println("New user joined: " + newUser);
                             // TODO: thêm vào bảng UI
+//                            UserDto newUser = gson.fromJson(json, UserDto.class);
+//                            PeerClient peerClient = new PeerClient(newUser.getIPAddress(), newUser.getPort(), this.username);
+//                            new Thread(() -> {
+//                                try {
+//                                    peerClient.connect();
+//                                } catch (Exception e) {
+//                                    System.err.println("Failed to connect to new peer " + newUser);
+//                                }
+//                            }).start();
                             break;
                          case "USER_DISCONNECTED":
                             System.err.println("Disconnected: "+ json);

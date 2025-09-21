@@ -40,7 +40,7 @@ public class ClientApplication extends javax.swing.JFrame {
             System.out.println("Peer server ready on " + ip + ":" + port);
             // có thể update GUI hoặc connect signaling server ở đây
             setTitle("Chat app P2P lai");
-            showLoginPanel();
+            showLoginPanel(true);
         });
 
         new Thread(() -> peerServer.startServer()).start();
@@ -60,13 +60,16 @@ public class ClientApplication extends javax.swing.JFrame {
     }
 
     // Hiển thị màn hình login
-    public void showLoginPanel() {
+    public void showLoginPanel(boolean center) {
         LoginPanel loginPanel = new LoginPanel(this);
         JPanel wrapper = new JPanel(new java.awt.GridBagLayout());
         wrapper.add(loginPanel, new java.awt.GridBagConstraints());
         wrapper.setPreferredSize(new Dimension(600, 600));
         setPanel(wrapper);
-        this.setLocationRelativeTo(null);
+        if (center) {
+            setLocationRelativeTo(null); // center
+        }
+
     }
 
     public void showHomePanel(String username) {

@@ -68,7 +68,8 @@ public class LoginPanel extends JPanel {
         String userName = textUN.getText();
         if (!userName.isBlank()) {
             try {
-                ConnectServer connectServer = ConnectServer.getInstance(userName);
+                ConnectServer connectServer = ConnectServer.getInstance();
+                connectServer.setUsername(userName);
                 connectServer.connect();
             } catch (Exception e) {
                 lbError.setText("Khong the ket noi toi server");
