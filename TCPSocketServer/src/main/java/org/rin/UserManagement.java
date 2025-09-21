@@ -29,7 +29,7 @@ public class UserManagement {
     }
 
     public void addUser(UserDto user, PrintWriter writer) {
-        String key = generateKey(user);
+        String key = user.getUsername();
         userMap.put(key, user);
         if (listener != null) {
             userWriters.put(key, writer);
@@ -37,57 +37,42 @@ public class UserManagement {
         }
     }
     public void removeUser(UserDto user) {
-        String key = generateKey(user);
-        userMap.remove(key);
-        if (listener != null) {
-            String userKey = generateKey(user);
-            listener.onUserRemoved(userKey);
-            userWriters.remove(userKey);
-        }
-    }
-    public void removeUser(String key) {
+        String key = user.getUsername();
         userMap.remove(key);
         if (listener != null) {
             listener.onUserRemoved(key);
             userWriters.remove(key);
         }
     }
-    public UserDto getUser(String key) {
-        return userMap.get(key);
-    }
-    public Map<String, UserDto> getAllUsers() {
-        return userMap;
-    }
 
-
-
-    public Map<String, UserDto> getAllUsersNotIncluding(UserDto userDto) {
+    public Map<String, UserDto> getAllUsersNotIncluding(String key) {
         Map<String, UserDto> result = new HashMap<>(userMap);
-        result.remove(generateKey(userDto));
+        result.remove(key);
         return result;
     }
     public Map<String, PrintWriter> getUserWriters() {
         return userWriters;
     }
-    public Map<String, PrintWriter> getUserWritersNotIncluding(UserDto userDto) {
+    public Map<String, PrintWriter> getUserWritersNotIncluding(String key) {
         Map<String, PrintWriter> result = new HashMap<>(userWriters);
-        result.remove(generateKey(userDto));
+        result.remove(key);
         return result;
     }
-    public List<UserDto> getAllUsersByUsername(String username) {
-        return userMap.values().stream().filter(user -> user.getUsername().equals(username)).toList();
+
+    public UserDto getUser(String username){
+        return userMap.get(username);
     }
 
 
-    public String generateKey(UserDto user) {
-        return user.getUsername() + "@" + user.getIPAddress() + ":" + user.getPort();
-    }
-    public UserDto parseKey(String key) {
-        String[] parts = key.split("@");
-        String username = parts[0];
-        String[] addressParts = parts[1].split(":");
-        String ipAddress = addressParts[0];
-        int port = Integer.parseInt(addressParts[1]);
-        return new UserDto(username, ipAddress, port);
-    }
+//    public String generateKey(UserDto user) {
+//        return user.getUsername() + "@" + user.getIPAddress() + ":" + user.getPort();
+//    }
+//    public UserDto parseKey(String key) {
+//        String[] parts = key.split("@");
+//        String username = parts[0];
+//        String[] addressParts = parts[1].split(":");
+//        String ipAddress = addressParts[0];
+//        int port = Integer.parseInt(addressParts[1]);
+//        return new UserDto(username, ipAddress, port);
+//    }
 }

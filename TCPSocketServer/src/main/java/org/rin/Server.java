@@ -77,11 +77,11 @@ public class Server {
                         userDto = newUser;
 
                         // --- Gửi lại danh sách user hiện có ---
-                        String usersJson = new Gson().toJson(userManagement.getAllUsersNotIncluding(newUser).values());
+                        String usersJson = new Gson().toJson(userManagement.getAllUsersNotIncluding(userDto.getUsername()).values());
                         out.println("USER_LIST|" + usersJson);
                         // --- Thông báo user mới đến các user khác ---
                         String newUserJson = new Gson().toJson(newUser);
-                        for (PrintWriter writer : userManagement.getUserWritersNotIncluding(newUser).values()) {
+                        for (PrintWriter writer : userManagement.getUserWritersNotIncluding(userDto.getUsername()).values()) {
                             writer.println("USER_CONNECTED|" + newUserJson);
                         }
 
@@ -100,7 +100,7 @@ public class Server {
                 for (PrintWriter writer : userManagement.getUserWriters().values()) {
                     writer.println("USER_DISCONNECTED|" + userJson);
                 }
-                System.out.println("Client disconnected: " + userManagement.generateKey(userDto));
+                System.out.println("Client disconnected: " + userDto.getUsername());
             }else{
                 System.out.println("Client disconnected before sending user info: " + clientSocket.getInetAddress());
             }

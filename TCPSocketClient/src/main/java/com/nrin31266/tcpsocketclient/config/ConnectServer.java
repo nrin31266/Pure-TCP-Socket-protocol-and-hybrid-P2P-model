@@ -1,12 +1,15 @@
 package com.nrin31266.tcpsocketclient.config;
 
 import com.google.gson.Gson;
+import com.nrin31266.tcpsocketclient.dto.MessageDto;
 import com.nrin31266.tcpsocketclient.dto.UserDto;
 import com.nrin31266.tcpsocketclient.listener.ServerListener;
+import com.nrin31266.tcpsocketclient.service.ChatManagement;
 
 import java.io.*;
 import java.lang.reflect.Type;
 import java.net.Socket;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class ConnectServer {
@@ -23,7 +26,7 @@ public class ConnectServer {
     private Gson gson = new Gson();
     private final PeerServer peerServer = PeerServer.getInstance();
     private ServerListener serverListener;
-
+    private final ChatManagement chatManagement = ChatManagement.getInstance();
     public void setServerListener(ServerListener listener) {
         this.serverListener = listener;
     }
@@ -66,6 +69,9 @@ public class ConnectServer {
     public void setUsername(String username) {
         this.username = username;
     }
+    public String getUsername() {
+        return username;
+    }
 
     public void startListening() {
         new Thread(() -> {
@@ -102,7 +108,10 @@ public class ConnectServer {
 
                         case "USER_CONNECTED":
                             System.err.println("Joined: "+ json);
-//                            UserDto newUser = gson.fromJson(json, UserDto.class);
+                            UserDto newUser = gson.fromJson(json, UserDto.class);
+                            MessageDto joinMessage = new MessageDto("", "", newUser.getUsername() + " has joined the chat.",
+                                    "SYSTEM", LocalDateTime.now().toString());
+                            chatManagement.onMessage("GLOBAL_CHAT", joinMessage);
 //                            System.out.println("New user joined: " + newUser);
                             // TODO: thêm vào bảng UI
 //                            UserDto newUser = gson.fromJson(json, UserDto.class);
@@ -114,10 +123,14 @@ public class ConnectServer {
 //                                    System.err.println("Failed to connect to new peer " + newUser);
 //                                }
 //                            }).start();
+
                             break;
                          case "USER_DISCONNECTED":
                             System.err.println("Disconnected: "+ json);
-
+                            UserDto leftUser = gson.fromJson(json, UserDto.class);
+                            MessageDto leftMessage = new MessageDto("", "", leftUser.getUsername() + " has left the chat.",
+                                    "SYSTEM", LocalDateTime.now().toString());
+                            chatManagement.onMessage("GLOBAL_CHAT", leftMessage);
                             break;
 
 

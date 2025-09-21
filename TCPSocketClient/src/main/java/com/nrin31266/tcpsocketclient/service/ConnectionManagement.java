@@ -1,6 +1,8 @@
 package com.nrin31266.tcpsocketclient.service;
 
 
+import com.google.gson.Gson;
+import com.nrin31266.tcpsocketclient.dto.MessageDto;
 import com.nrin31266.tcpsocketclient.dto.PeerDto;
 import com.nrin31266.tcpsocketclient.dto.UserDto;
 import com.nrin31266.tcpsocketclient.listener.UserChangeListener;
@@ -20,6 +22,7 @@ public class ConnectionManagement {
     public void setListener(UserChangeListener listener) {
         this.listener = listener;
     }
+    Gson gson = new Gson();
 //    public void setListener(UserChangeListener listener) {
 //        this.listener = listener;
 //    }
@@ -36,7 +39,7 @@ public class ConnectionManagement {
     }
 
     public void connectUser(UserDto user, Socket socket, PrintWriter writer, BufferedReader reader, String type) {
-        String key = generateKey(user);
+        String key = user.getUsername();
         PeerDto peerDto = new PeerDto(socket, reader, writer, type);
         mapPeer.put(key, peerDto);
         if (listener != null) {
@@ -69,9 +72,7 @@ public class ConnectionManagement {
         mapPeer.clear();
     }
 
-    public String generateKey(UserDto user) {
-        return user.getUsername() + "@" + user.getIPAddress() + ":" + user.getPort();
-    }
+
 
     public void closeAllConnections() {
         for (PeerDto peer : mapPeer.values()) {
@@ -80,13 +81,14 @@ public class ConnectionManagement {
         mapPeer.clear();
     }
 
-
-    public UserDto parseKey(String key) {
-        String[] parts = key.split("@");
-        String username = parts[0];
-        String[] addressParts = parts[1].split(":");
-        String ipAddress = addressParts[0];
-        int port = Integer.parseInt(addressParts[1]);
-        return new UserDto(username, ipAddress, port);
+    public void sendMessageToPeer(String key, Object message) {
+        PeerDto peerDto = mapPeer.get(key);
+        if (peerDto != null) {
+            PrintWriter writer = peerDto.getOut();
+            String json = gson.toJson(message);
+            writer.println("CHAT|" + json);
+        }
     }
+
+
 }

@@ -6,6 +6,7 @@ package com.nrin31266.tcpsocketclient.swing;
 
 import com.nrin31266.tcpsocketclient.ClientApplication;
 import com.nrin31266.tcpsocketclient.config.ConnectServer;
+import com.nrin31266.tcpsocketclient.service.ChatManagement;
 import com.nrin31266.tcpsocketclient.service.ConnectionManagement;
 
 import javax.swing.*;
@@ -16,7 +17,7 @@ public class HomePanel extends javax.swing.JPanel {
     private ConnectServer client;
     private ClientApplication app;
     private final ConnectionManagement connectionManagement = ConnectionManagement.getInstance();
-    
+    private final ChatManagement chatManagement = ChatManagement.getInstance();
     public HomePanel(String username, ClientApplication app) {
         this.username = username;
         this.app = app;
@@ -41,7 +42,7 @@ public class HomePanel extends javax.swing.JPanel {
         LeftBar leftBar = new LeftBar();
 
         // Main content
-        HomeContent homeContent = new HomeContent();
+        ChatLayout homeContent = new ChatLayout();
         // SplitPane để chia left - main
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftBar, homeContent);
         //leftBar ban đầu rộng 250 px, phần còn lại là homeContent
@@ -66,6 +67,7 @@ public class HomePanel extends javax.swing.JPanel {
         client.disconnect();
         app.showLoginPanel(false);
         connectionManagement.closeAllConnections();
+        chatManagement.init();
 
     }
 

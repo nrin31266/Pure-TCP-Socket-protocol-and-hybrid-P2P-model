@@ -1,8 +1,10 @@
 package com.nrin31266.tcpsocketclient.config;
 
 import com.google.gson.Gson;
+import com.nrin31266.tcpsocketclient.dto.MessageDto;
 import com.nrin31266.tcpsocketclient.dto.PeerConnectDto;
 import com.nrin31266.tcpsocketclient.dto.UserDto;
+import com.nrin31266.tcpsocketclient.service.ChatManagement;
 import com.nrin31266.tcpsocketclient.service.ConnectionManagement;
 
 import java.io.BufferedReader;
@@ -20,7 +22,7 @@ public class PeerClient {
     private final String username;
     private final ConnectionManagement connectionManagement = ConnectionManagement.getInstance();
     private final String myUsername;
-
+    private  final ChatManagement chatManagement = ChatManagement.getInstance();
 
     private Gson gson = new Gson();
 
@@ -60,7 +62,10 @@ public class PeerClient {
 
                     switch (type) {
                         case "CHAT":
+                            System.out.println("Chat message: " + json);
+                            MessageDto messageDto = gson.fromJson(json, MessageDto.class);
 
+                            chatManagement.onMessage(username, messageDto);
                             break;
 
 
@@ -69,7 +74,7 @@ public class PeerClient {
                     }
                 }
                 System.err.println("Dung lang nghe server");
-                connectionManagement.disconnectedUser(connectionManagement.generateKey(new UserDto(username, peerServerHost, peerServerPort)));
+                connectionManagement.disconnectedUser(username);
             } catch (IOException e) {
                 System.out.println("Listener stopped (disconnected).");
             }

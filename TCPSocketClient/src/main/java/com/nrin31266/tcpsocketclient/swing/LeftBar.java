@@ -4,6 +4,7 @@ import com.nrin31266.tcpsocketclient.config.ConnectServer;
 import com.nrin31266.tcpsocketclient.dto.UserDto;
 import com.nrin31266.tcpsocketclient.listener.ServerListener;
 import com.nrin31266.tcpsocketclient.listener.UserChangeListener;
+import com.nrin31266.tcpsocketclient.service.ChatManagement;
 import com.nrin31266.tcpsocketclient.service.ConnectionManagement;
 
 import javax.swing.*;
@@ -12,6 +13,7 @@ import java.awt.*;
 public class LeftBar extends JPanel {
     ConnectionManagement connectionManagement = ConnectionManagement.getInstance();
     ConnectServer connectServer = ConnectServer.getInstance();
+    ChatManagement chatManagement = ChatManagement.getInstance();
     public LeftBar() {
         initComponent();
     }
@@ -31,7 +33,7 @@ public class LeftBar extends JPanel {
         scrollPane.setPreferredSize(new Dimension(200, 0));
 
         add(scrollPane, BorderLayout.CENTER);
-        ConversationItem globalChatItem = new ConversationItem("GLOBAL_CHAT", new UserDto("Global Chat", null, -1), true, "SERVER");
+        ConversationItem globalChatItem = new ConversationItem("GLOBAL_CHAT", new UserDto("GLOBAL_CHAT", null, -1), true, "SERVER");
         userListPanel.add(globalChatItem);
 
         connectServer.setServerListener(new ServerListener() {
@@ -60,10 +62,8 @@ public class LeftBar extends JPanel {
                     if (comp instanceof ConversationItem) {
                         ConversationItem item = (ConversationItem) comp;
                         if (item.getKey().equals(key)) {
-                            // đã có -> update thôi + đưa lên đầu
+                            // đã có -> update thôi
                             item.setOnline(isOnline);
-                            userListPanel.remove(item);
-                            userListPanel.add(item, 1);
                             userListPanel.revalidate();
                             userListPanel.repaint();
                             return;

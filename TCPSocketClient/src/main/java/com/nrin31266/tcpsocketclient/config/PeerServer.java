@@ -6,8 +6,10 @@ package com.nrin31266.tcpsocketclient.config;
 
 import com.google.gson.Gson;
 import com.nrin31266.tcpsocketclient.PeerServerListener;
+import com.nrin31266.tcpsocketclient.dto.MessageDto;
 import com.nrin31266.tcpsocketclient.dto.PeerConnectDto;
 import com.nrin31266.tcpsocketclient.dto.UserDto;
+import com.nrin31266.tcpsocketclient.service.ChatManagement;
 import com.nrin31266.tcpsocketclient.service.ConnectionManagement;
 
 import java.io.BufferedReader;
@@ -34,7 +36,8 @@ public class PeerServer {
     public void setListener(PeerServerListener listener) {
         this.peerServerListener = listener;
     }
-    public final ConnectionManagement connectionManagement = ConnectionManagement.getInstance();
+    private final ConnectionManagement connectionManagement = ConnectionManagement.getInstance();
+    private final ChatManagement chatManagement = ChatManagement.getInstance();
     public PeerServer() {
 
     }
@@ -89,6 +92,10 @@ public class PeerServer {
                     case "CHAT":
                         // Xử lý tin nhắn chat
                         System.out.println("Chat message: " + json);
+                        MessageDto messageDto = gson.fromJson(json, MessageDto.class);
+                        assert userDto != null;
+                        chatManagement.onMessage(userDto.getUsername(), messageDto);
+
                         break;
                     case "PEER_CONNECTION":
                         // Xử lý kết nối peer
@@ -106,7 +113,7 @@ public class PeerServer {
             // nếu readLine trả về null -> client đã disconnect
             System.out.println("Client peer disconnected: " + clientSocket.getInetAddress());
             if (userDto != null) {
-                connectionManagement.disconnectedUser(connectionManagement.generateKey(userDto));
+                connectionManagement.disconnectedUser(userDto.getUsername());
             }
         } catch (IOException e) {
             System.out.println("Connection error with " + clientSocket.getInetAddress());
