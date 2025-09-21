@@ -1,6 +1,8 @@
 package com.nrin31266.tcpsocketclient.swing;
 
+import com.nrin31266.tcpsocketclient.config.ConnectServer;
 import com.nrin31266.tcpsocketclient.dto.UserDto;
+import com.nrin31266.tcpsocketclient.listener.ServerListener;
 import com.nrin31266.tcpsocketclient.listener.UserChangeListener;
 import com.nrin31266.tcpsocketclient.service.ConnectionManagement;
 
@@ -9,7 +11,7 @@ import java.awt.*;
 
 public class LeftBar extends JPanel {
     ConnectionManagement connectionManagement = ConnectionManagement.getInstance();
-
+    ConnectServer connectServer = ConnectServer.getInstance();
     public LeftBar() {
         initComponent();
     }
@@ -29,6 +31,23 @@ public class LeftBar extends JPanel {
         scrollPane.setPreferredSize(new Dimension(200, 0));
 
         add(scrollPane, BorderLayout.CENTER);
+        ConversationItem globalChatItem = new ConversationItem("GLOBAL_CHAT", new UserDto("Global Chat", null, -1), true, "SERVER");
+        userListPanel.add(globalChatItem);
+
+        connectServer.setServerListener(new ServerListener() {
+
+            @Override
+            public void onDisconnected() {
+                // Thay doi 1 minh trang thai server disconnected
+                Component[] components = userListPanel.getComponents();
+                for (Component comp : components) {
+                    if (comp instanceof ConversationItem) {
+                        ConversationItem item = (ConversationItem) comp;
+                        if (item.getKey().equals("GLOBAL_CHAT")) {
+                            item.setOnline(false);
+                        }}}
+            }
+        });
 
         connectionManagement.setListener(new UserChangeListener() {
             @Override
@@ -44,7 +63,7 @@ public class LeftBar extends JPanel {
                             // đã có -> update thôi + đưa lên đầu
                             item.setOnline(isOnline);
                             userListPanel.remove(item);
-                            userListPanel.add(item, 0);
+                            userListPanel.add(item, 1);
                             userListPanel.revalidate();
                             userListPanel.repaint();
                             return;
@@ -54,7 +73,7 @@ public class LeftBar extends JPanel {
 
                 // nếu chưa có thì add mới -> add lên đầu luôn
                 ConversationItem newItem = new ConversationItem(key, user, isOnline, typeConnect);
-                userListPanel.add(newItem, 0);
+                userListPanel.add(newItem, 1);
                 userListPanel.revalidate();
                 userListPanel.repaint();
             }

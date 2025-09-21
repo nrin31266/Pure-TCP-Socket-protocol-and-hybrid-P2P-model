@@ -2,6 +2,8 @@ package com.nrin31266.tcpsocketclient.config;
 
 import com.google.gson.Gson;
 import com.nrin31266.tcpsocketclient.dto.UserDto;
+import com.nrin31266.tcpsocketclient.listener.ServerListener;
+
 import java.io.*;
 import java.lang.reflect.Type;
 import java.net.Socket;
@@ -20,6 +22,11 @@ public class ConnectServer {
     private volatile boolean connected = false;
     private Gson gson = new Gson();
     private final PeerServer peerServer = PeerServer.getInstance();
+    private ServerListener serverListener;
+
+    public void setServerListener(ServerListener listener) {
+        this.serverListener = listener;
+    }
 
     // private constructor (Singleton)
     private ConnectServer() {
@@ -118,7 +125,8 @@ public class ConnectServer {
                             System.out.println("Unknown message from server: " + line);
                     }
                 }
-                System.err.println("Dung lang nghe server");
+
+                disconnect();
             } catch (IOException e) {
                 if (connected) { // chỉ in lỗi khi chưa logout
                     e.printStackTrace();
@@ -145,6 +153,9 @@ public class ConnectServer {
             connected = false;
             if (socket != null && !socket.isClosed()) {
                 socket.close();
+            }
+            if(serverListener != null) {
+                serverListener.onDisconnected();
             }
             System.out.println("Disconnected from server.");
         } catch (IOException e) {

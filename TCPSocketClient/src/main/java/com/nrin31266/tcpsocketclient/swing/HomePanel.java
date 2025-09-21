@@ -45,7 +45,7 @@ public class HomePanel extends javax.swing.JPanel {
         // SplitPane để chia left - main
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftBar, homeContent);
         //leftBar ban đầu rộng 250 px, phần còn lại là homeContent
-        splitPane.setDividerLocation(250); // vị trí mặc định
+        splitPane.setDividerLocation(300); // vị trí mặc định
 //        0.0 → chỉ panel bên phải (homeContent) co giãn.
 //        1.0 → chỉ panel bên trái (leftBar) co giãn.
 //        0.5 → cả hai co giãn đều nhau.
